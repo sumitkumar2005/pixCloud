@@ -6,6 +6,15 @@ import Photo from '../models/Upload.js'; // MongoDB model
 
 const router = express.Router();
 
+// GET /posts
+router.get('/all-photos', async (req, res) => {
+    try {
+        const posts = await Photo.find().sort({ uploadedAt: -1 });
+        res.json(posts);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 router.get('/photos', authenticate, async (req, res) => {
     try {

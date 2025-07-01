@@ -1,6 +1,5 @@
 import Header from "./Header";
-import {Outlet} from "react-router-dom";
-
+import { Outlet } from "react-router-dom";
 
 const Layout = ({ children }) => {
     return (
@@ -10,7 +9,7 @@ const Layout = ({ children }) => {
 
             {/* Main Content */}
             <main className="flex-1 bg-gray-50 px-6 py-4">
-            <Outlet/>
+                <Outlet/>
             </main>
 
 

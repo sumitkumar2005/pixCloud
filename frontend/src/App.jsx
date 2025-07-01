@@ -1,12 +1,15 @@
 import React from 'react';
-import AppRouter from "./routes/AppRouter.jsx";
-import Register from "./pages/Register.jsx";
+import { AuthProvider } from './context/AuthContext';
+import AppRouter from './routes/AppRouter';
+import './index.css';
+
 function App() {
     return (
-
-        <div>
-           <AppRouter/>
-        </div>
+        <AuthProvider>
+            <div className="min-h-screen bg-gray-50">
+                <AppRouter />
+            </div>
+        </AuthProvider>
     );
 }
 

@@ -7,6 +7,7 @@ import ProtectedRoutes from './ProtectedRoutes';
 import Layout from '../components/Layout/Layout.jsx';
 import Uploadform from "../pages/Uploadform.jsx";
 import Myposts from "../pages/Myposts.jsx";
+import Allpost  from "../pages/Allposts.jsx";
 function AppRouter() {
     const { user, setUser, setToken,token } = useAuth();
 
@@ -28,6 +29,7 @@ function AppRouter() {
                 <Route path="/dashboard" element={<Dashboard user={user} />} />
                 <Route path="/upload" element={<Uploadform user={user} token={token} />} />
                 <Route path="/my-posts" element={<Myposts token={token}/>} />
+                <Route path="/all-posts" element={<Allpost token={token} />} />
                 </Route>
             </Route>
         </Routes>
