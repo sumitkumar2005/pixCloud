@@ -1,39 +1,55 @@
 import React, { useState } from 'react';
 import { Heart, Share2, Bookmark, Camera, TrendingUp, Users, Award } from 'lucide-react';
 import Search from '../components/common/Search.jsx';
-import PhotoCard from "../components/common/photoCard.jsx";
+import PhotoCard from "../components/common/PhotoCard.jsx";
 function Dashboard() {
     const [liked, setLiked] = useState(false);
     const [bookmarked, setBookmarked] = useState(false);
+    const [selectedPhoto, setSelectedPhoto] = useState(null);
+
+    const formatRelativeTime = (date) => {
+        const now = new Date();
+        const photoDate = new Date(date);
+        const diffInHours = Math.floor((now - photoDate) / (1000 * 60 * 60));
+
+        if (diffInHours < 1) return 'Just now';
+        if (diffInHours < 24) return `${diffInHours}h ago`;
+        if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+        return photoDate.toLocaleDateString();
+    };
 
     const recommendedPhotos = [
         {
-            id: 1,
-            src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=400&auto=format&fit=crop",
-            photographer: "Alex Chen",
-            likes: 1247,
-            title: "Mountain Sunrise"
+            _id: 1,
+            filename: "mountain-sunrise.jpg",
+            title: "Mountain Sunrise",
+            description: "Beautiful mountain sunrise captured at dawn",
+            author: "Alex Chen",
+            uploadDate: new Date().toISOString()
         },
         {
-            id: 2,
-            src: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=400&auto=format&fit=crop",
-            photographer: "Sarah Kim",
-            likes: 892,
-            title: "Ocean Waves"
+            _id: 2,
+            filename: "ocean-waves.jpg",
+            title: "Ocean Waves",
+            description: "Mesmerizing ocean waves at sunset",
+            author: "Sarah Kim",
+            uploadDate: new Date().toISOString()
         },
         {
-            id: 3,
-            src: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=400&auto=format&fit=crop",
-            photographer: "Mike Torres",
-            likes: 2156,
-            title: "Forest Path"
+            _id: 3,
+            filename: "forest-path.jpg",
+            title: "Forest Path",
+            description: "A serene path through the forest",
+            author: "Mike Torres",
+            uploadDate: new Date().toISOString()
         },
         {
-            id: 4,
-            src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
-            photographer: "Emma Davis",
-            likes: 674,
-            title: "City Lights"
+            _id: 4,
+            filename: "city-lights.jpg",
+            title: "City Lights",
+            description: "Urban nightscape with stunning city lights",
+            author: "Emma Davis",
+            uploadDate: new Date().toISOString()
         }
     ];
 
@@ -156,7 +172,12 @@ function Dashboard() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {recommendedPhotos.map((photo) => (
-                            <PhotoCard key={photo.id} photo={photo} />
+                            <PhotoCard
+                                key={photo._id}
+                                photo={photo}
+                                setSelectedPhoto={setSelectedPhoto}
+                                formatRelativeTime={formatRelativeTime}
+                            />
                         ))}
                     </div>
                 </div>
