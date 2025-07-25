@@ -33,7 +33,7 @@ const photoSchema = new mongoose.Schema({
 
     views: [
         {
-            userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
             viewedAt: { type: Date, default: Date.now }
         }
     ],

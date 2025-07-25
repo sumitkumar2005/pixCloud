@@ -23,10 +23,10 @@ const PhotoCard = ({
     const renderActions = () => (
         <div className="flex gap-4 text-gray-600">
             <button onClick={(e) => handleActionClick(e, 'like')} className="flex items-center gap-1 hover:text-blue-500">
-                <Heart size={20} /> {photo.likes || 0}
+                <Heart size={20} /> {photo.likes?.length || 0}
             </button>
             <button onClick={(e) => handleActionClick(e, 'view')} className="flex items-center gap-1 hover:text-blue-500">
-                <Eye size={20} /> {photo.views || 0}
+                <Eye size={20} /> {photo.views?.length || 0}
             </button>
             <button onClick={(e) => handleActionClick(e, 'share')} className="flex items-center gap-1 hover:text-blue-500">
                 <Share2 size={20} />

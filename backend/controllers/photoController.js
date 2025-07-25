@@ -1,18 +1,25 @@
- const likePhoto = async (req, res) => {
+import Upload from '../models/Upload.js';
+
+const likePhoto = async (req, res) => {
     try {
         const { photoId } = req.params;
-        const userId = req.user.id;
+        const userId = req.user.id;  // Getting ID from JWT token
 
-        const photo = await Photo.findById(photoId);
-        if (!photo) return res.status(404).json({ message: "Photo not found" });
+        console.log('Debug - userId:', userId);
+        console.log('Debug - photoId:', photoId);
 
-        const existingLike = photo.likes.find(like => like.userId.toString() === userId);
+        const photo = await Upload.findById(photoId);
+        if (!photo) {
+            console.log('Debug - Photo not found');
+            return res.status(404).json({ message: "Photo not found" });
+        }
+
+        const existingLike = photo.likes.find(like => like.userId?.toString() === userId);
+        console.log('Debug - existingLike:', existingLike);
 
         if (existingLike) {
-            // Unlike
-            photo.likes = photo.likes.filter(like => like.userId.toString() !== userId);
+            photo.likes = photo.likes.filter(like => like.userId?.toString() !== userId);
         } else {
-            // Like
             photo.likes.push({ userId });
         }
 
@@ -21,68 +28,92 @@
 
         res.json({ message: existingLike ? "Unliked" : "Liked", likesCount: photo.likesCount });
     } catch (err) {
+        console.error('Like Photo Error:', err);
         res.status(500).json({ message: "Error updating like", error: err.message });
     }
 };
- const viewPhoto = async (req, res) => {
-     try {
-         const { photoId } = req.params;
-         const userId = req.user?.id; // Optional: allow guests
 
-         const photo = await Photo.findById(photoId);
-         if (!photo) return res.status(404).json({ message: "Photo not found" });
+const viewPhoto = async (req, res) => {
+    try {
+        const { photoId } = req.params;
+        const userId = req.user.id;  // Getting ID from JWT token
 
-         const alreadyViewed = photo.views.find(view => view.userId?.toString() === userId);
-         if (!alreadyViewed) {
-             photo.views.push({ userId });
-             photo.viewsCount = photo.views.length;
-             await photo.save();
-         }
+        console.log('Debug - viewPhoto userId:', userId);
+        console.log('Debug - viewPhoto photoId:', photoId);
 
-         res.json({ message: "View registered", viewsCount: photo.viewsCount });
-     } catch (err) {
-         res.status(500).json({ message: "Error updating views", error: err.message });
-     }
- };
+        const photo = await Upload.findById(photoId);
+        if (!photo) {
+            console.log('Debug - Photo not found');
+            return res.status(404).json({ message: "Photo not found" });
+        }
 
- const addComment = async (req, res) => {
-     try {
-         const { photoId } = req.params;
-         const { content } = req.body;
-         const userId = req.user.id;
+        const alreadyViewed = photo.views.find(view => view.userId?.toString() === userId);
+        console.log('Debug - alreadyViewed:', alreadyViewed);
 
-         const photo = await Photo.findById(photoId);
-         if (!photo) return res.status(404).json({ message: "Photo not found" });
+        if (!alreadyViewed) {
+            photo.views.push({ userId });
+            photo.viewsCount = photo.views.length;
+            await photo.save();
+        }
 
-         photo.comments.push({ userId, content });
-         photo.commentsCount = photo.comments.length;
+        res.json({ message: "View registered", viewsCount: photo.viewsCount });
+    } catch (err) {
+        console.error('View Photo Error:', err);
+        res.status(500).json({ message: "Error updating views", error: err.message });
+    }
+};
 
-         await photo.save();
+const addComment = async (req, res) => {
+    try {
+        const { photoId } = req.params;
+        const { content } = req.body;
+        const userId = req.user.id;  // Getting ID from JWT token
 
-         res.status(201).json({ message: "Comment added", comments: photo.comments });
-     } catch (err) {
-         res.status(500).json({ message: "Error adding comment", error: err.message });
-     }
- };
+        console.log('Debug - Comment userId:', userId);
+        console.log('Debug - Comment content:', content);
 
- const replyToComment = async (req, res) => {
-     try {
-         const { photoId, commentIndex } = req.params;
-         const { content } = req.body;
-         const userId = req.user.id;
+        const photo = await Upload.findById(photoId);
+        if (!photo) {
+            console.log('Debug - Photo not found');
+            return res.status(404).json({ message: "Photo not found" });
+        }
 
-         const photo = await Photo.findById(photoId);
-         if (!photo || !photo.comments[commentIndex]) {
-             return res.status(404).json({ message: "Comment not found" });
-         }
+        photo.comments.push({ userId, content });
+        photo.commentsCount = photo.comments.length;
 
-         photo.comments[commentIndex].replies.push({ userId, content });
-         await photo.save();
+        await photo.save();
 
-         res.status(201).json({ message: "Reply added", comment: photo.comments[commentIndex] });
-     } catch (err) {
-         res.status(500).json({ message: "Error replying to comment", error: err.message });
-     }
- };
+        // Populate user info before sending response
+        const populatedPhoto = await Upload.findById(photoId).populate('comments.userId', 'name');
 
- export default {replyToComment, addComment, viewPhoto, likePhoto};
+        res.status(201).json({ message: "Comment added", comments: populatedPhoto.comments });
+    } catch (err) {
+        console.error('Comment Error:', err);
+        res.status(500).json({ message: "Error adding comment", error: err.message });
+    }
+};
+
+const replyToComment = async (req, res) => {
+    try {
+        const { photoId, commentIndex } = req.params;
+        const { content } = req.body;
+        const userId = req.user.id;
+
+        const photo = await Upload.findById(photoId);
+        if (!photo || !photo.comments[commentIndex]) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        photo.comments[commentIndex].replies.push({ userId, content });
+        await photo.save();
+
+        // Populate user info before sending response
+        const populatedPhoto = await Upload.findById(photoId).populate('comments.userId', 'name');
+
+        res.status(201).json({ message: "Reply added", comment: populatedPhoto.comments[commentIndex] });
+    } catch (err) {
+        res.status(500).json({ message: "Error replying to comment", error: err.message });
+    }
+};
+
+export default { replyToComment, addComment, viewPhoto, likePhoto };

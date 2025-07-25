@@ -3,8 +3,11 @@ import axios from 'axios';
 import PhotoCard from '../components/common/PhotoCard';
 import Search from '../components/common/Search';
 import { filterPhotosByDate } from '../utils/dateUtils';
+import PhotoModal from '../components/common/PhotoModal';
+import { useAuth } from '../context/AuthContext';
 
 const AllPosts = () => {
+    const { user } = useAuth();
     const [posts, setPosts] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -113,6 +116,14 @@ const AllPosts = () => {
                     No photos found.
                 </div>
             )}
+            {selectedPhoto && (
+                <PhotoModal
+                    photo={selectedPhoto}
+                    onClose={() => setSelectedPhoto(null)}
+                    userId={user?._id}
+                />
+            )}
+
         </div>
     );
 };
