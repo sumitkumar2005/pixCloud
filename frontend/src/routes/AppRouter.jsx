@@ -8,8 +8,10 @@ import Layout from '../components/Layout/Layout.jsx';
 import Uploadform from "../pages/Uploadform.jsx";
 import Myposts from "../pages/Myposts.jsx";
 import Allpost  from "../pages/Allposts.jsx";
+import PhotoInfo from '../pages/photoInfo';
+
 function AppRouter() {
-    const { user, setUser, setToken,token } = useAuth();
+    const { user, setUser, setToken, token } = useAuth();
 
     const routes = useMemo(() => (
         <Routes>
@@ -30,6 +32,7 @@ function AppRouter() {
                 <Route path="/upload" element={<Uploadform user={user} token={token} />} />
                 <Route path="/my-posts" element={<Myposts token={token}/>} />
                 <Route path="/all-posts" element={<Allpost token={token} />} />
+                <Route path="/photo/:photoId" element={<PhotoInfo />} />
                 </Route>
             </Route>
         </Routes>

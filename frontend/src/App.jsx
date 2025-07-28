@@ -6,7 +6,7 @@ import './index.css';
 function App() {
     return (
         <AuthProvider>
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gradient-primary">
                 <AppRouter />
             </div>
         </AuthProvider>
